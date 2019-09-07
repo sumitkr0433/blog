@@ -1,0 +1,41 @@
+{% extends "blog/base.html" %}
+ {% load blog_tags %}
+{% block title %}My Blog{% endblock %}
+ 
+{% block content %}
+  <h1>Krishna Story</h1>
+  
+  <!--writing the tag conditions-->
+    {% if tag %}
+    <h2>Posts tagged with "{{ tag.name }}"</h2>
+  {% endif %}
+  {% for post in posts %}
+    <h3>
+      <a href="{{ post.get_absolute_url }}">
+        {{ post.title }}
+        <!--p class ="tags">Tags:{{ post.tags.all|join:","}}-->
+      </a>
+    </h3>
+ <!----WRITING THE TAG SECOND CONDITIONS-->	
+	<p class="tags">
+      Tags:
+      {% for tag in post.tags.all %}
+        <a href='{% url "blog:post_list_by_tag" tag.slug %}'>
+          {{ tag.name }}
+        </a>
+        {% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+    <p class="date">
+      Published {{ post.publish }} by {{ post.author }}
+    </p>
+    <!--{{ post.body|truncatewords:30|linebreaks }}-->
+	{{ post.body|markdown|truncatewords_html:30 }}
+  {% endfor %}
+  <!-- in page pass posts but if we use list view then pass-->
+  <!--In	order	to	keep	pagination	working,	we	have	to	use	the	right	page
+object	that	is	passed	to	the	template.	Django's	ListView	generic	view passes	the	selected	page	in	a	variable	called	page_obj,	so	you	have	to edit	your	post/list.html	template	
+accordingly	to	include	the	paginator using	the	right	variable,	as	follows:-->
+
+  {% include "pagination.html" with page=posts %}
+{% endblock %}
